@@ -1,11 +1,12 @@
-import { data } from './data.geo';
+// import { data } from './data.geo';
+import {data} from './data.geo'
 import { throttle, filter, forEach, map, reduce } from 'lodash';
 const container = document.getElementById('display');
 
 const display = new here.xyz.maps.Map(
     container,
     {
-        zoomLevel: 8,
+        zoomLevel: 3,
         center: {
             longitude: data.features[0].geometry.coordinates[0],
             latitude: data.features[0].geometry.coordinates[1]
@@ -82,7 +83,7 @@ function isVisible(point, rect) {
 }
 
 display.addObserver('zoomlevel', (i, zoom) => {
-    cluster1(zoom)
+    cluster1(8)
 })
 
 
@@ -97,7 +98,7 @@ function cluster1(zoom) {
 
     let clusters = map(grids, (rect, index) => {
         const features = search(rect, data.features);
-        if (features.length > 3) {
+        if (features.length > 2) {
             return reduce(features,(curr, next) => {
                 const BBox = [
                     Math.min(curr.geometry.coordinates[0], next.geometry.coordinates[0]),
@@ -110,8 +111,8 @@ function cluster1(zoom) {
                     geometry: {
                         type: 'Point',
                         coordinates: [
-                            Math.min(curr.geometry.coordinates[0], next.geometry.coordinates[0]),
-                            Math.min(curr.geometry.coordinates[1], next.geometry.coordinates[1]),
+                            BBox[0] + ((BBox[1] - BBox[0])/2),
+                            BBox[2] + ((BBox[3] - BBox[2])/2)
                         ]
                     }
                 }
